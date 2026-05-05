@@ -1,0 +1,54 @@
+name: WinHub High-Performance Build (Fixed Signature)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Dependencies
+        run: brew install xcodegen
+
+      - name: Generate Structure
+        run: |
+          mkdir -p WinHub
+          # Create project files (project.yml, App.swift, etc. as before)
+          xcodegen generate
+
+      - name: Build Archive
+        run: |
+          xcodebuild archive \
+            -project WinHub.xcodeproj \
+            -scheme WinHub \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath build/WinHub.xcarchive \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES
+
+      - name: Ad-Hoc Signing (Fixes Bad File Descriptor)
+        run: |
+          # Navigate to the app bundle
+          APP_PATH="build/WinHub.xcarchive/Products/Applications/WinHub.app"
+          
+          # Force an ad-hoc signature on the binary
+          codesign --force --deep --sign - "$APP_PATH"
+
+      - name: Package IPA
+        run: |
+          mkdir -p build/Payload
+          cp -r build/WinHub.xcarchive/Products/Applications/WinHub.app build/Payload/
+          cd build && zip -qr WinHub_Fixed.ipa Payload
+
+      - name: Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WinHub-Signed-IPA
+          path: build/WinHub_Fixed.ipa
