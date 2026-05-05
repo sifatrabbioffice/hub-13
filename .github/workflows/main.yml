@@ -92,10 +92,10 @@ jobs:
           
           # Create the IPA
           cd build
-          zip -r WinHub_Final.ipa Payload
+          zip -r WinHub_emu.ipa Payload
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: WinHub-Fixed
-          path: build/WinHub_Fine.ipa
+          path: build/WinHub_emu.ipa
