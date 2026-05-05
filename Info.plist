@@ -1,0 +1,13 @@
+<dict>
+    <key>CFBundleExecutable</key>
+    <string>WinHub</string>
+    <key>CFBundleIdentifier</key>
+    <string>com.winhub.emulator.promax</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>LSRequiresIPhoneOS</key>
+    <true/>
+    <!-- JIT and Extended Memory Access -->
+    <key>CSResourcesFileMapped</key>
+    <true/>
+</dict>
